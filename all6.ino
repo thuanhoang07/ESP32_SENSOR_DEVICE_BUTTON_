@@ -1,8 +1,21 @@
+/*----------------------------------------------------------------
+***This project is done by me: Hoang Tran Minh Thuan***
+
+You can refer and give suggestions
+Email: hoangtranminhthuan.work@gmail.com
+
+Thank u and have a nice day!
+*/
+
+
+
+
+
 #include "DHT.h"
 
 #define ERA_DEBUG
-#define DHTPIN 22 //dht22(chân out)
-#define DHTTYPE DHT22 //thư viện này dùng cho nhiều loại dht nên chọn loại dht22
+#define DHTPIN 22 
+#define DHTTYPE DHT22 
 DHT dht(DHTPIN, DHTTYPE);
 
 #define DEFAULT_MQTT_HOST "mqtt1.eoh.io"
@@ -12,8 +25,8 @@ DHT dht(DHTPIN, DHTTYPE);
 #include <ERa.hpp>
 #include <ERa/ERaTimer.hpp>
 
-const char ssid[] = "EoH";
-const char pass[] = "Eoh@2020";  
+const char ssid[] = "thuanhoang07";
+const char pass[] = "123456789";  
 
 ERaTimer timer;
 
@@ -24,16 +37,16 @@ ERaTimer timer;
 #define BUZZER 32  //
 
 #define buttonPin 18  //MODE
-#define BUTTON_PINquat 19  //NN QUAT
-#define BUTTON_PINled 21   //NN LED
+#define BUTTON_PINquat 19  //NN fan
+#define BUTTON_PINled 21   //NN 
 
-#define ena 13  //chân cắm vào l298n để đk tốc độ
-#define in1 5 // chân 4,5 cắm vào l298n luôn để đk chiều quay
+#define ena 13  //
+#define in1 5 // 
 #define in2 4
 
 int mode;
 
-bool currentStateA = true;  // Trạng thái hiện tại: true = A, false = B
+bool currentStateA = true; 
 bool lastButtonState = HIGH;
 
 bool currentStateBquat = true;  
@@ -68,24 +81,24 @@ void setup() {
   digitalWrite(in2, LOW);   //
 
   ERa.virtualWrite(V0, 0);   //mq2
-  ERa.virtualWrite(V1, 0);   //cảm biến ánh sáng
-  ERa.virtualWrite(V2, 0);   //độ sáng led
-  ERa.virtualWrite(V3, 0);   //tốc độ quạt
-  ERa.virtualWrite(V4, 0);   //còi
-  ERa.virtualWrite(V5, 0);   //nn quạt
-  ERa.virtualWrite(V6, 0);   //nhiệt độ
+  ERa.virtualWrite(V1, 0);   //light sensor
+  ERa.virtualWrite(V2, 0);   //brightless
+  ERa.virtualWrite(V3, 0);   //fan speed
+  ERa.virtualWrite(V4, 0);   //buzzer
+  ERa.virtualWrite(V5, 0);   //nn fan
+  ERa.virtualWrite(V6, 0);   //temp
   ERa.virtualWrite(V7, 0);   //nn led
-  ERa.virtualWrite(V8, 0);   //trạng thái(0:thủ công, 1:tự động) mode
-  ERa.virtualWrite(V9, 0);   //nn mode bật auto
-  ERa.virtualWrite(V10, 0);  //trạng thái led
-  ERa.virtualWrite(V11, 0);  //trạng thái quạt
+  ERa.virtualWrite(V8, 0);   //(0:manu, 1:auto) mode
+  ERa.virtualWrite(V9, 0);   //nn mode turn on auto
+  ERa.virtualWrite(V10, 0);  // led status
+  ERa.virtualWrite(V11, 0);  //fan status
 }
 
-ERA_WRITE(V7)  //CHỈ WRITE ĐƯỢC TỪ NÚT NHẤN TRÊN ERA XUỐNG ESP!
+ERA_WRITE(V7)  
 {
-  int p = param.getInt();     //LẤY GIÁ TRỊ CỦA CHÂN ẢO
-  if (mode = 0) {             // mode thủ công
-    ERa.virtualWrite(V2, p);  // ĐỒNG BỘ TRẠNG THÁI BUTTON VÀ CHÂN ẢO TRÊN ERA
+  int p = param.getInt();    
+  if (mode = 0) {             
+    ERa.virtualWrite(V2, p);  
     analogWrite(LED, p);
   }
   if (p > 0) {
@@ -96,25 +109,25 @@ ERA_WRITE(V7)  //CHỈ WRITE ĐƯỢC TỪ NÚT NHẤN TRÊN ERA XUỐNG ESP!
 }
 
 ERA_WRITE(V5) {
-  int p1 = param.getInt();  //LẤY GIÁ TRỊ CỦA CHÂN ẢO
-  if (mode = 0) {           // mode thủ công thì mới đồng bộ
+  int p1 = param.getInt();  
+  if (mode = 0) {          
     analogWrite(ena, p1);
-    ERa.virtualWrite(V3, p1);  // ĐỒNG BỘ TRẠNG THÁI BUTTON VÀ CHÂN ẢO TRÊN ERA
+    ERa.virtualWrite(V3, p1);  
   }
   if (p1 > 0) {
-    currentStateBquat = true; //khi p1(mode thủ công) > 0 thì chạy thực hiện các lệnh if dòng 195-199
+    currentStateBquat = true; 
   } else {
-    currentStateBquat = false; //p1<0 thì ko lọt vào, thực hiện lệnh else dòng 200-205
+    currentStateBquat = false; 
   }
 }
 
 ERA_WRITE(V9) {
-  int p2 = param.getInt();   //LẤY GIÁ TRỊ CỦA CHÂN ẢO
-  ERa.virtualWrite(V8, p2);  // ĐỒNG BỘ TRẠNG THÁI BUTTON VÀ CHÂN ẢO TRÊN ERA
+  int p2 = param.getInt();  
+  ERa.virtualWrite(V8, p2); 
   if (p2 > 0) {
-    currentStateA = true; //chạy vào dòng 177
+    currentStateA = true; 
   } else {
-    currentStateA = false;  //chạy vào dòng 183
+    currentStateA = false; 
   }
 }
 
@@ -139,7 +152,7 @@ void processStateA() {
     ERa.virtualWrite(V5, 0);
     ERa.virtualWrite(V11, 0);
 
-  } else if (dht.readTemperature() >= 25 && dht.readTemperature() <= 35) { //25-35: bật hơi hơi quạt
+  } else if (dht.readTemperature() >= 25 && dht.readTemperature() <= 35) { 
     analogWrite(ena, 128);  // Tốc độ trung bình
     ERa.virtualWrite(V3, 128);
     ERa.virtualWrite(V5, 255);
