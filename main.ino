@@ -16,7 +16,7 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 #define DEFAULT_MQTT_HOST "mqtt1.eoh.io"
-#define ERA_AUTH_TOKEN "70344ef5-4228-4a2d-8a69-cd0930ed7867"
+#define ERA_AUTH_TOKEN "ERA TOKEN"   // EDIT
 
 #include <Arduino.h>
 #include <ERa.hpp>
